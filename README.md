@@ -1,16 +1,18 @@
 # dygen
 Post processing tool.
 
-## Pre-requisite
+## Installation
 
-You will need following Python libraries installed:
+To install the requirements, and this repository as a package perform the following.
 
-PIL and tqdm
-These commands should help:
-```
-pip install 
-pip install Pillow
-```
+1. clone this repository:
+    - `git clone https://github.com/dymokomi/dygen.git`
+2. (optional) create a virtual environment:
+    - `cd dygen`
+    - `python3 -m venv .env`
+    - `source .env/bin/activate`
+2. install the package and dependencies
+    - `pip install -e .`
 
 # Use
 
