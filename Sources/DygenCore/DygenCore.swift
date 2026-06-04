@@ -7,9 +7,10 @@ import Foundation
 public enum DygenCore {
     public static let name = "DygenCore"
 
-    /// Called once at app launch: registers built-in node types and logs.
+    /// Called once at app launch: registers built-in node types + commands.
     public static func bootstrap() {
         NodeRegistry.registerBuiltins()
+        CommandRegistry.shared.registerBuiltins()
         AppLog.shared.log("\(name) ready")
     }
 }

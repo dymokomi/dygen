@@ -43,13 +43,14 @@ enum DygenWindows {
         LayoutManager(registry: registry, storeURL: storeURL(), defaultWorkspace: defaultWorkspace())
     }
 
-    /// A fresh document seeded with a Read → (gap) → Write so the editor isn't
-    /// empty on first launch.
+    /// A fresh document seeded with the default painterly pipeline, viewing the
+    /// sharpen node so the app opens to a finished result.
     static func makeDocument() -> Document {
         NodeRegistry.registerBuiltins()
-        let read = NodeRegistry.descriptor("read")!.makeNode(at: CGPoint(x: -230, y: -30))
-        let write = NodeRegistry.descriptor("write")!.makeNode(at: CGPoint(x: 120, y: -30))
-        return Document(graph: Graph(nodes: [read, write]))
+        let scene = DefaultScene.make()
+        let doc = Document(graph: scene.graph)
+        doc.viewNodeID = scene.viewNode
+        return doc
     }
 
     /// Editor view for a window kind.

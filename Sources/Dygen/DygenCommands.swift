@@ -23,7 +23,16 @@ struct DygenCommands: Commands {
         }
         CommandMenu("Render") {
             Button("Render Write Nodes") { model.render() }.keyboardShortcut("r")
+            Button("Export PNG…") { exportPNG() }.keyboardShortcut("e")
         }
+    }
+
+    private func exportPNG() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.png]
+        panel.nameFieldStringValue = "dygen.png"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        model.exportPNG(to: url)
     }
 
     private func open() {
