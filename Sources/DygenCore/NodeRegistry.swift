@@ -89,5 +89,64 @@ public enum NodeRegistry {
             inputs: [PortSpec("in")], outputs: [],
             params: [ParamSpec("path", label: "File", ui: .filePicker, default: .string(""))]
         ))
+
+        // Filters (M5)
+        register(NodeDescriptor(
+            type: "pixelate", category: "Filter", title: "Pixelate",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [ParamSpec("size", label: "Block", ui: .scrubInt, default: .int(2), range: 1...64)]
+        ))
+        register(NodeDescriptor(
+            type: "blur", category: "Filter", title: "Blur",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [ParamSpec("radius", label: "Radius", ui: .scrubFloat, default: .float(4), range: 0...64)]
+        ))
+        register(NodeDescriptor(
+            type: "sharpen", category: "Filter", title: "Sharpen",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: []
+        ))
+
+        // Quantize family (M6)
+        register(NodeDescriptor(
+            type: "quantize", category: "Quantize", title: "Quantize",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [ParamSpec("colors", label: "Colors", ui: .scrubInt, default: .int(64), range: 2...64)]
+        ))
+        register(NodeDescriptor(
+            type: "cleanup", category: "Quantize", title: "Cleanup",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [ParamSpec("radius", label: "Cluster", ui: .scrubInt, default: .int(13), range: 0...40)]
+        ))
+
+        // Painterly (M7)
+        register(NodeDescriptor(
+            type: "paintBlobs", category: "Paint", title: "Paint Blobs",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [ParamSpec("seed", label: "Seed", ui: .scrubInt, default: .int(2), range: 0...999)]
+        ))
+        register(NodeDescriptor(
+            type: "brushStrokes", category: "Paint", title: "Brush Strokes",
+            inputs: [PortSpec("in"), PortSpec("stencil")], outputs: [PortSpec("out")],
+            params: [
+                ParamSpec("amount", label: "Amount", ui: .scrubFloat, default: .float(0.5), range: 0...1),
+                ParamSpec("softness", label: "Softness", ui: .scrubFloat, default: .float(12), range: 0...40),
+                ParamSpec("volumeDiff", label: "Vol Diff", ui: .scrubFloat, default: .float(0.03), range: 0...1),
+                ParamSpec("seed", label: "Seed", ui: .scrubInt, default: .int(2), range: 0...999),
+            ]
+        ))
+        register(NodeDescriptor(
+            type: "compOriginal", category: "Paint", title: "Comp Original",
+            inputs: [PortSpec("in"), PortSpec("original"), PortSpec("stencil")], outputs: [PortSpec("out")],
+            params: []
+        ))
+        register(NodeDescriptor(
+            type: "glow", category: "Filter", title: "Glow",
+            inputs: [PortSpec("in")], outputs: [PortSpec("out")],
+            params: [
+                ParamSpec("radius", label: "Radius", ui: .scrubFloat, default: .float(15), range: 0...64),
+                ParamSpec("amount", label: "Amount", ui: .scrubFloat, default: .float(0.3), range: 0...1),
+            ]
+        ))
     }
 }

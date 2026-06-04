@@ -41,9 +41,12 @@ final class CanvasRenderer: NSObject, MTKViewDelegate {
     var zoom: Float = 1
     var pan: SIMD2<Float> = .zero
 
-    init?(device: MTLDevice) {
-        guard let queue = device.makeCommandQueue(),
-              let lib = try? device.makeLibrary(source: blitShaderSource, options: nil),
+    /// Uses the GPU context's queue so executor op buffers (committed earlier)
+    /// are ordered before the display buffer.
+    init?(ctx: GPUContext) {
+        let device = ctx.device
+        let queue = ctx.queue
+        guard let lib = try? device.makeLibrary(source: blitShaderSource, options: nil),
               let vfn = lib.makeFunction(name: "blit_vertex"),
               let ffn = lib.makeFunction(name: "blit_fragment") else { return nil }
         let desc = MTLRenderPipelineDescriptor()
@@ -149,12 +152,12 @@ struct CanvasView: NSViewRepresentable {
         let renderer: CanvasRenderer?
         init(executor: Executor) {
             self.executor = executor
-            self.renderer = CanvasRenderer(device: executor.ctx.device)
+            self.renderer = CanvasRenderer(ctx: executor.ctx)
         }
         func refresh(document: Document) {
             guard let renderer else { return }
             do {
-                renderer.texture = try executor.evaluate(document.viewNodeID, graph: document.graph)
+                renderer.texture = try executor.evaluate(document.viewNodeID, graph: document.graph)?.texture
             } catch {
                 renderer.texture = nil
                 AppLog.shared.error("\(error)")
