@@ -2,17 +2,16 @@ import SwiftUI
 import WindowKit
 import DygenCore
 
-/// Hosts the WindowKit docking surface over the shared `Document`. The layout
-/// manager owns the live split tree (restored on appear, auto-persisted).
+/// Hosts the WindowKit docking surface over the app model. The layout manager
+/// owns the live split tree (restored on appear, auto-persisted).
 struct ContentView: View {
-    @ObservedObject var document: Document
-    @ObservedObject var layout: LayoutManager
+    @ObservedObject var model: AppModel
 
     var body: some View {
-        DockView(manager: layout) { kind, _ in
-            DygenWindows.editor(for: kind, document: document)
+        DockView(manager: model.layout) { kind, _ in
+            DygenWindows.editor(for: kind, model: model)
         }
         .frame(minWidth: 900, minHeight: 560)
-        .onAppear { layout.restoreLayout() }
+        .onAppear { model.layout.restoreLayout() }
     }
 }
