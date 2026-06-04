@@ -52,11 +52,18 @@ enum DygenWindows {
         return Document(graph: Graph(nodes: [read, write]))
     }
 
-    /// Editor view for a window kind. (Canvas becomes the real Metal view in M4.)
-    static func editor(for kind: WindowKind, document: Document) -> AnyView {
+    /// Editor view for a window kind.
+    static func editor(for kind: WindowKind, model: AppModel) -> AnyView {
+        let document = model.document
         if kind == nodeEditor { return AnyView(NodeEditorView(document: document)) }
         if kind == properties { return AnyView(PropertiesView(document: document)) }
         if kind == log        { return AnyView(LogView()) }
+        if kind == canvas {
+            if let gpu = model.gpu, let ex = model.executor {
+                return AnyView(CanvasView(document: document, gpu: gpu, executor: ex))
+            }
+            return AnyView(AreaEditorPlaceholder(title: "Canvas (no GPU)", systemImage: "exclamationmark.triangle"))
+        }
         let info = registry.info(for: kind)
         return AnyView(AreaEditorPlaceholder(title: info?.title ?? kind.id,
                                              systemImage: info?.systemImage ?? "square.dashed"))

@@ -3,9 +3,10 @@ import AppKit
 import UniformTypeIdentifiers
 import DygenCore
 
-/// File and Edit menu commands operating on the shared document.
+/// File, Edit, and Render menu commands operating on the shared document.
 struct DygenCommands: Commands {
-    let document: Document
+    let model: AppModel
+    private var document: Document { model.document }
     private static let dygenType = UTType(filenameExtension: "dygen") ?? .json
 
     var body: some Commands {
@@ -19,6 +20,9 @@ struct DygenCommands: Commands {
         CommandGroup(replacing: .undoRedo) {
             Button("Undo") { document.undo() }.keyboardShortcut("z")
             Button("Redo") { document.redo() }.keyboardShortcut("z", modifiers: [.command, .shift])
+        }
+        CommandMenu("Render") {
+            Button("Render Write Nodes") { model.render() }.keyboardShortcut("r")
         }
     }
 

@@ -19,8 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @main
 struct DygenApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var document = DygenWindows.makeDocument()
-    @StateObject private var layout = DygenWindows.makeLayoutManager()
+    @StateObject private var model = AppModel()
 
     init() {
         WindowKit.bootstrap()
@@ -29,11 +28,11 @@ struct DygenApp: App {
 
     var body: some Scene {
         WindowGroup("Dygen") {
-            ContentView(document: document, layout: layout)
+            ContentView(model: model)
         }
         .defaultSize(width: 1200, height: 760)
         .commands {
-            DygenCommands(document: document)
+            DygenCommands(model: model)
         }
     }
 }
