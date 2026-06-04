@@ -41,4 +41,18 @@ final class AppModel: ObservableObject {
         }
         AppLog.shared.log("Rendered \(count) write node(s)")
     }
+
+    /// Export the current view node's output to a PNG at full resolution.
+    func exportPNG(to url: URL) {
+        guard let ex = executor, let vn = document.viewNodeID else { AppLog.shared.error("Export: nothing to view"); return }
+        do {
+            guard let tex = try ex.evaluate(vn, graph: document.graph)?.texture else {
+                AppLog.shared.error("Export: view node produced no image"); return
+            }
+            try TextureIO.writePNG(tex, to: url, ctx: ex.ctx)
+            AppLog.shared.log("Exported \(url.lastPathComponent)")
+        } catch {
+            AppLog.shared.error("Export: \(error)")
+        }
+    }
 }
