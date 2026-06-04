@@ -5,7 +5,7 @@ import Metal
 public final class Executor {
     public let ctx: GPUContext
     private let opForType: (String) -> NodeOp?
-    private var cache: [UUID: MTLTexture] = [:]
+    private var cache: [UUID: NodeImage] = [:]
     private var dirty: Set<UUID> = []
 
     public init(ctx: GPUContext, opForType: @escaping (String) -> NodeOp?) {
@@ -30,26 +30,26 @@ public final class Executor {
         }
     }
 
-    /// Evaluate a node, recursively pulling its inputs. Returns its output
-    /// texture (nil for sinks / unresolved nodes). Cached unless dirty.
+    /// Evaluate a node, recursively pulling its inputs. Returns its output image
+    /// (nil for sinks / unresolved nodes). Cached unless dirty.
     @discardableResult
-    public func evaluate(_ id: UUID?, graph: Graph) throws -> MTLTexture? {
+    public func evaluate(_ id: UUID?, graph: Graph) throws -> NodeImage? {
         guard let id else { return nil }
         if !dirty.contains(id), let cached = cache[id] { return cached }
         guard let node = graph.node(id), let op = opForType(node.type) else { return nil }
 
-        var inputs: [String: MTLTexture] = [:]
+        var inputs: [String: NodeImage] = [:]
         if let desc = NodeRegistry.descriptor(node.type) {
             for port in desc.inputs {
                 if let conn = graph.inputConnection(to: id, port: port.name),
-                   let tex = try evaluate(conn.fromNode, graph: graph) {
-                    inputs[port.name] = tex
+                   let img = try evaluate(conn.fromNode, graph: graph) {
+                    inputs[port.name] = img
                 }
             }
         }
 
         let out = try op.evaluate(inputs: inputs, params: node.params, ctx: ctx)
-        if let out { cache[id] = out }   // sinks (nil) aren't cached → always re-run
+        if let out, !out.isEmpty { cache[id] = out }   // sinks aren't cached → always re-run
         dirty.remove(id)
         return out
     }
